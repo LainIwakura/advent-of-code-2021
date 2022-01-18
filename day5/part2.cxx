@@ -62,24 +62,63 @@ int main()
 
 	for (auto [start, end] : coords)
 	{
-		if ((get<0>(start) != get<0>(end)) && (get<1>(start) != get<1>(end)))
-			continue;
-
 		int start_x = get<0>(start);
 		int start_y = get<1>(start);
 		int end_x = get<0>(end);
 		int end_y = get<1>(end);
-
+		
+		bool upper_left = false;
+		bool upper_right = false;
+		bool lower_left = false;
+		bool lower_right = false;
+		bool diagonal = ((start_y != end_y) && (start_x != end_x));
 		bool rows = (start_y == end_y);
 		int distance = (rows) ? abs(end_x - start_x) : abs(end_y - start_y);
 
-		if (start_x > end_x)
-			swap(start_x, end_x);
-		if (start_y > end_y)
-			swap(start_y, end_y);
+		// Makes some math easier
+		if (!diagonal)
+		{
+			if (start_x > end_x)
+				swap(start_x, end_x);
+			if (start_y > end_y)
+				swap(start_y, end_y);
+		}
+		else
+		{
+			if ((start_x > end_x) && (start_y < end_y))
+				upper_left = true;
+			else if ((start_x > end_x) && (start_y > end_y))
+				upper_right = true;
+			else if ((start_x < end_x) && (start_y > end_y))
+				lower_left = true;
+			else if ((start_x < end_x) && (start_y < end_y))
+				lower_right = true;
+		}
 
-
-		if (rows)
+		if (diagonal)
+		{
+			if (upper_left)
+			{
+				for (int i = start_x, j = start_y; (i >= end_x && j <= end_y); i--, j++)
+					grid[j][i]++;
+			}
+			else if (upper_right)
+			{
+				for (int i = start_x, j = start_y; (i >= end_x && j >= end_y); i--, j--)
+					grid[j][i]++;
+			}
+			else if (lower_left)
+			{
+				for (int i = start_x, j = start_y; (i <= end_x && j >= end_y); i++, j--)
+					grid[j][i]++;
+			}
+			else if (lower_right)
+			{
+				for (int i = start_x, j = start_y; (i <= end_x && j <= end_y); i++, j++)
+					grid[j][i]++;
+			}
+		}
+		else if (rows)
 		{
 			for (int i = start_x; i <= end_x; i++)
 				grid[end_y][i]++;
